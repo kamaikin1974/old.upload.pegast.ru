@@ -1,0 +1,12 @@
+{% extends "base.twig" %}
+
+{% block title %}{{ parent() }} — File uploaded{% endblock %}
+{% block header %}File uploaded{% endblock %}
+
+{% block body %}
+    <p>
+        You can use this link:
+        <br>
+        <input value="{{ link }}">
+    </p>
+{% endblock %}

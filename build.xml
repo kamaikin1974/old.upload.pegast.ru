@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="CDN" default="build" basedir=".">
+    <property name="php" value="php"/>
+
+    <target name="build">
+    </target>
+
+    <target name="update">
+        <gitpull repository="${project.basedir}" source="origin"/>
+        <exec command="git submodule update --init --recursive"/>
+        <phing buildfile="${phing.file}" target="build"/>
+    </target>
+</project>
