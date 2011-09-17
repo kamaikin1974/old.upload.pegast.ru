@@ -13,7 +13,7 @@ class Upload extends PoolController
         $file = $app['request']->files->get('cdn-file');
 
         if (!$file instanceof UploadedFile) {
-            $app['session']->setFlash('error', 'File not selected');
+            $app['session']->setFlash('upload-error', 'File not selected');
             return $app->redirect($app['url_generator']->generate('home'));
         }
 

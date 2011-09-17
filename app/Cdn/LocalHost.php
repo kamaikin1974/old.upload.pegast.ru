@@ -2,7 +2,7 @@
 
 namespace Cdn;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 class LocalHost implements Host
 {
@@ -36,10 +36,10 @@ class LocalHost implements Host
     /**
      * Save uploaded file on CDN host
      *
-     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file uploaded file to save
+     * @param \Symfony\Component\HttpFoundation\File\File $file file to save
      * @return string file hash
      */
-    public function save(UploadedFile $file)
+    public function save(File $file)
     {
         $hash = hash_file('sha256', $file->getPathname());
 

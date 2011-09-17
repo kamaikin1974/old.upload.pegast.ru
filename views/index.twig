@@ -1,15 +1,42 @@
 {% extends "base.twig" %}
 
-{% block header %}Upload file{% endblock %}
+{% block head %}
+<style>
+    input {
+        width: 250px;
+    }
+
+    #dowload-header {
+        margin-top: 70px;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    {% if app.session.hasFlash('error') %}
-    <p class="error">{{ app.session.getFlash('error') }}</p>
+    <h1>Upload file</h1>
+
+    {% if app.session.hasFlash('upload-error') %}
+    <p class="error">{{ app.session.getFlash('upload-error') }}</p>
     {% endif %}
+
     <form action="{{ app.url_generator.generate('upload') }}" method="post" enctype="multipart/form-data">
         <p>
             <input type="file" name="cdn-file" />
-            <button>Save file</button>
+            <button>Upload</button>
+        </p>
+    </form>
+
+
+    <h1 id="dowload-header">Download file</h1>
+
+    {% if app.session.hasFlash('download-error') %}
+    <p class="error">{{ app.session.getFlash('download-error') }}</p>
+    {% endif %}
+
+    <form action="{{ app.url_generator.generate('download') }}" method="post" enctype="multipart/form-data">
+        <p>
+            <input type="text" name="cdn-file" value="{{ app.session.getFlash('download-url') }}"/>
+            <button>Download</button>
         </p>
     </form>
 {% endblock %}
