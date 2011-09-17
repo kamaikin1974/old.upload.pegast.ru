@@ -6,7 +6,7 @@
     {% if app.session.hasFlash('error') %}
     <p class="error">{{ app.session.getFlash('error') }}</p>
     {% endif %}
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form action="{{ app.url_generator.generate('upload') }}" method="post" enctype="multipart/form-data">
         <p>
             <input type="file" name="cdn-file" />
             <button>Save file</button>

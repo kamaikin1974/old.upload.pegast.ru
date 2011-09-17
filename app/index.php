@@ -1,24 +1,12 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 require_once __DIR__ . '/../vendor/silex/autoload.php';
 
-function uploaded_file_mapper_name($hash) {
-    return substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4, 2) . '/' . substr($hash, 6);
-}
-
-function uploaded_file_mapper_path($hash) {
-    return __DIR__ . '/../web/get/' . uploaded_file_mapper_name($hash);
-}
-
-function get_cdn_url($hash, $name) {
-    return sprintf('http://cdn01.pegast.su/get/%s/%s', uploaded_file_mapper_name($hash), $name);
-}
-
+// Start application
 $app = new Silex\Application();
+
+$app['autoloader']->registerNamespace('Cdn', __DIR__);
+$app['autoloader']->registerNamespace('Controller', __DIR__);
 
 $app->register(new Silex\Extension\TwigExtension(), array(
     'twig.path' => __DIR__ . '/../views',
@@ -28,46 +16,21 @@ $app->register(new Silex\Extension\SessionExtension());
 $app->register(new Silex\Extension\UrlGeneratorExtension());
 
 
-$app->get('/', function (Silex\Application $app) {
-    return $app['twig']->render('index.twig');
-});
+// Configure pool
+$hosts = require_once __DIR__ . '/hosts.php';
 
-$app->post('/upload', function (Silex\Application $app)  {
-    $file = $app['request']->files->get('cdn-file');
-
-    if (!$file instanceof UploadedFile) {
-        $app['session']->setFlash('error', 'File not selected');
-        return $app->redirect('/');
-    }
-
-    $hash = hash_file('sha256', $file->getPathname());
-
-    $path = uploaded_file_mapper_path($hash);
-
-    $file->move(pathinfo($path, PATHINFO_DIRNAME), pathinfo($path, PATHINFO_FILENAME));
-
-    return $app->redirect($app['url_generator']->generate('show_file', array('hash' => $hash, 'name' => $file->getClientOriginalName())));
-});
-
-$app->get('/show/{hash}/{name}', function (Silex\Application $app, $hash, $name) {
-    $url = get_cdn_url($hash, $name);
-
-    return $app['twig']->render('show.twig', array(
-        'url' => $url
-    ));
-})->bind('show_file');
+$pool = new Cdn\RandomPool();
+foreach ($hosts as $host) {
+    $pool->addHost($host);
+}
 
 
-$app->error(function (\Exception $e, $code) {
-    switch ($code) {
-        case 404:
-            $message = 'The requested page could not be found.';
-            break;
-        default:
-            $message = $e->getMessage();
-    }
+// Configure routes
+$app->get('/', new Controller\Index())->bind('home');
+$app->post('/upload', new Controller\Upload($pool))->bind('upload');
+$app->get('/{hostName}/{fileId}/{fileName}', new Controller\Show($pool))->bind('show_file');
+$app->error(new Controller\Error());
 
-    return new Response($message, $code);
-});
 
+// Run application
 $app->run();
