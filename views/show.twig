@@ -6,6 +6,7 @@
 <style>
     #download-url {
         width: 100%;
+        height: 50px;
     }
 </style>
 <script>
@@ -21,6 +22,7 @@
     <p>
         You can use this link:
         <br>
-        <input value="{{ url }}" id="download-url">
+        <textarea id="download-url" readonly="true">{{ url }}</textarea>
     </p>
+    <p><a href="/">Upload new file</a></p>
 {% endblock %}
