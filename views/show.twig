@@ -1,12 +1,26 @@
 {% extends "base.twig" %}
 
-{% block title %}{{ parent() }} — File uploaded{% endblock %}
 {% block header %}File uploaded{% endblock %}
+
+{% block head %}
+<style>
+    #download-url {
+        width: 100%;
+    }
+</style>
+<script>
+    window.addEventListener('load', function (e) {
+        document.getElementById('download-url').onclick = function (e) {
+            this.select();
+        };
+    });
+</script>
+{% endblock %}
 
 {% block body %}
     <p>
         You can use this link:
         <br>
-        <input value="{{ link }}">
+        <input value="{{ url }}" id="download-url">
     </p>
 {% endblock %}

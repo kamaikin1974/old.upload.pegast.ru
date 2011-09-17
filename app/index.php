@@ -6,6 +6,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 require_once __DIR__ . '/../vendor/silex/autoload.php';
 
+function uploaded_file_mapper_name($hash) {
+    return substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4);
+}
+
+function uploaded_file_mapper_path($hash) {
+    return __DIR__ . '/../web/get/' . uploaded_file_mapper_name($hash);
+}
+
+function get_cdn_url($hash, $name) {
+    return sprintf('http://cdn01.pegast.su/get/%s/%s', uploaded_file_mapper_name($hash), $name);
+}
+
 $app = new Silex\Application();
 
 $app->register(new Silex\Extension\TwigExtension(), array(
@@ -21,7 +33,7 @@ $app->get('/', function (Silex\Application $app) {
 });
 
 $app->post('/upload', function (Silex\Application $app)  {
-    $file = $app['request']->files->get('cdn_file');
+    $file = $app['request']->files->get('cdn-file');
 
     if (!$file instanceof UploadedFile) {
         $app['session']->setFlash('error', 'File not selected');
@@ -29,34 +41,22 @@ $app->post('/upload', function (Silex\Application $app)  {
     }
 
     $hash = hash_file('sha256', $file->getPath());
-    $extension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-    $name = sprintf("%s.%s", $hash, $extension);
 
-    $file->move(__DIR__ . '/../web/get', $name);
+    $directory = uploaded_file_mapper_path($hash);
+    $filename = $file->getClientOriginalName();
 
-    return $app->redirect('/show/' . $name);
+    $file->move($directory, $filename);
+
+    return $app->redirect($app['url_generator']->generate('show_file', array('hash' => $hash, 'name' => $filename)));
 });
 
-$app->get('/show/{link}', function (Silex\Application $app, $link) {
+$app->get('/show/{hash}/{name}', function (Silex\Application $app, $hash, $name) {
+    $url = get_cdn_url($hash, $name);
+
     return $app['twig']->render('show.twig', array(
-        'link' => $link
+        'url' => $url
     ));
-})
-->convert('link', function ($name) use ($app) {
-    return $app['url_generator']->generate('get_file', array('file' => $name), true);
-});
-
-$app->get('/get/{file}', function (File $file) {
-    $response = new Response(file_get_contents($file->getRealPath()));
-    $response->headers->set('Content-Type', $file->getMimeType());
-
-    return $response;
-})
-->bind('get_file')
-->convert('file', function ($name) {
-    return new File(__DIR__ . '/../web/get/' . $name);
-});
-
+})->bind('show_file');
 
 $app->error(function (\Exception $e, $code) {
     switch ($code) {

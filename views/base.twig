@@ -1,7 +1,28 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{% block title %}CDN{% endblock %}</title>
+        <title>CDN</title>
+        <style>
+            html {
+                background: #d3d3d3;
+                font: 150% "Segoe UI", "Optima", "Tahoma", sans-serif;
+                color: #333333;
+            }
+
+            body {
+                width: 500px;
+                margin: 150px auto 0;
+                border: 1px solid #a9a9a9;
+                padding: 0 50px;
+                background: #f5f5f5;
+                border-radius: 20px;
+            }
+
+            .error {
+                color: #cc0000;
+            }
+        </style>
+        {% block head %}{% endblock %}
     </head>
     <body>
         <h1>{% block header %}{% endblock %}</h1>
