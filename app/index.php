@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 require_once __DIR__ . '/../vendor/silex/autoload.php';
 
 function uploaded_file_mapper_name($hash) {
-    return substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4);
+    return substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4, 2) . '/' . substr($hash, 6);
 }
 
 function uploaded_file_mapper_path($hash) {
