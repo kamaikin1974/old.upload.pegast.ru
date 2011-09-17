@@ -40,14 +40,13 @@ $app->post('/upload', function (Silex\Application $app)  {
         return $app->redirect('/');
     }
 
-    $hash = hash_file('sha256', $file->getPath());
+    $hash = hash_file('sha256', $file->getPathname());
 
-    $directory = uploaded_file_mapper_path($hash);
-    $filename = $file->getClientOriginalName();
+    $path = uploaded_file_mapper_path($hash);
 
-    $file->move($directory, $filename);
+    $file->move(pathinfo($path, PATHINFO_DIRNAME), pathinfo($path, PATHINFO_FILENAME));
 
-    return $app->redirect($app['url_generator']->generate('show_file', array('hash' => $hash, 'name' => $filename)));
+    return $app->redirect($app['url_generator']->generate('show_file', array('hash' => $hash, 'name' => $file->getClientOriginalName())));
 });
 
 $app->get('/show/{hash}/{name}', function (Silex\Application $app, $hash, $name) {
@@ -57,6 +56,7 @@ $app->get('/show/{hash}/{name}', function (Silex\Application $app, $hash, $name)
         'url' => $url
     ));
 })->bind('show_file');
+
 
 $app->error(function (\Exception $e, $code) {
     switch ($code) {
