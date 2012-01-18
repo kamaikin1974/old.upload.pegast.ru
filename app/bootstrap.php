@@ -8,20 +8,20 @@ $app['autoloader']->registerNamespaceFallbacks(array(
     __DIR__ . '/../src',
 ));
 
-$app->register(new Silex\Extension\TwigExtension(), array(
+$config = require __DIR__ . '/config.php';
+foreach ($config as $key => $value) {
+    $app[$key] = $value;
+}
+
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/templates',
     'twig.class_path' => __DIR__ . '/../vendor/twig/lib'
 ));
 
-$app->register(new Silex\Extension\SessionExtension());
+$app->register(new Silex\Provider\SessionServiceProvider());
 
-$app->register(new Silex\Extension\UrlGeneratorExtension());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
-$hosts = require_once __DIR__ . '/hosts.php';
-
-$pool = new Cdn\RandomPool();
-foreach ($hosts as $host) {
-    $pool->addHost($host);
-}
+$app->register(new Pegas\Cdn\CdnServiceProvider());
 
 return $app;
