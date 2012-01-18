@@ -24,7 +24,7 @@ class CdnControllerProvider implements ControllerProviderInterface
         $controllers = new ControllerCollection();
 
         $controllers->get('/', function (Application $app) {
-            return $app['twig']->render('index.twig');
+            return $app['twig']->render('index.html.twig');
         })->bind('home');
 
         $controllers->post('/upload', function (Application $app) {
@@ -78,7 +78,7 @@ class CdnControllerProvider implements ControllerProviderInterface
         $controllers->get('/{hostName}/{fileId}/{fileName}', function (Application $app, $hostName, $fileId, $fileName) {
             $url = $app['cdn.pool']->getHost($hostName)->generateUrl($fileId, $fileName);
 
-            return $app['twig']->render('show.twig', array(
+            return $app['twig']->render('show.html.twig', array(
                 'url' => $url,
             ));
         })->bind('show_file');
