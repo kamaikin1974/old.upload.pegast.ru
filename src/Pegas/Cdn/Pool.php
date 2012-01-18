@@ -1,6 +1,6 @@
 <?php
 
-namespace Cdn;
+namespace Pegas\Cdn;
 
 abstract class Pool
 {

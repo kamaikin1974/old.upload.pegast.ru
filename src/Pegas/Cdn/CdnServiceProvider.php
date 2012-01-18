@@ -4,7 +4,6 @@ namespace Pegas\Cdn;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Cdn\RandomPool;
 
 class CdnServiceProvider implements ServiceProviderInterface
 {

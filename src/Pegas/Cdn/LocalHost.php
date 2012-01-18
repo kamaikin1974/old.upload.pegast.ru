@@ -1,6 +1,6 @@
 <?php
 
-namespace Cdn;
+namespace Pegas\Cdn;
 
 use Symfony\Component\HttpFoundation\File\File;
 
