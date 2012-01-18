@@ -3,6 +3,7 @@
 $app = require_once __DIR__ . '/bootstrap.php';
 
 $app->mount('/', new Pegas\Cdn\CdnControllerProvider());
+$app->mount('/api', new Pegas\Cdn\CdnApiControllerProvider());
 
 $app->error(function (\Exception $e, $code) {
     switch ($code) {
